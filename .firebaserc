@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "whatsapp-sender-1745259132"
+  },
+  "targets": {
+    "whatsapp-sender-1745259132": {
+      "hosting": {
+        "default": [
+          "whatsapp-sender-1745259132"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

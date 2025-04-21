@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ha">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tura min WhatsApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-200 to-cyan-200 p-6">
+
+    <!-- 🔒 AUTH OVERLAY -->
+    <div id="authGate" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div class="bg-white rounded-2xl p-6 w-full max-w-xs space-y-4">
+        <h2 class="text-xl font-bold text-center">🔒 Shiga</h2>
+
+        <input id="phoneInput" type="tel" placeholder="Lambar waya"
+               class="w-full rounded-lg border p-2" />
+
+        <input id="pinInput" type="password" maxlength="4" pattern="\\d{4}"
+               placeholder="PIN (lamba 4)" class="w-full rounded-lg border p-2" />
+
+        <button id="loginBtn"
+                class="w-full py-2 rounded-lg bg-emerald-600 text-white font-semibold">
+          Shiga
+        </button>
+
+        <p id="authError" class="text-center text-sm text-red-600 hidden"></p>
+      </div>
+    </div>
+    <!-- 🔒 /AUTH OVERLAY -->
+
+    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md grid gap-4">
+      <h1 class="text-2xl font-bold text-center">💬 Tura min WhatsApp!</h1>
+      <label class="block text-sm font-medium text-gray-700" for="message">
+        Sakon ka
+      </label>
+      <textarea id="message" rows="4"
+        class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:ring-emerald-500 focus:border-emerald-500 p-3">Don Allah Turo Min Free Data</textarea>
+
+      <button id="sendBtn"
+        class="mt-4 w-full py-3 rounded-xl font-semibold bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white transition">
+        Send via WhatsApp
+      </button>
+
+      <p class="text-xs text-center text-gray-500">
+        Powered by WhatsApp Click‑to‑Chat
+      </p>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+
+    <script>
+      /* ╭───🔑  REPLACE WITH YOUR OWN CONFIG  ───╮
+         │ 1) run: firebase apps:sdkconfig web    │
+         │ 2) copy the object here                │
+         ╰────────────────────────────────────────╯ */
+      const firebaseConfig = {
+        apiKey: "PASTE_HERE",
+        authDomain: "PASTE_HERE.firebaseapp.com",
+        projectId: "PASTE_HERE",
+        appId: "PASTE_HERE"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+
+      // Elements
+      const gate   = document.getElementById("authGate");
+      const phone  = document.getElementById("phoneInput");
+      const pin    = document.getElementById("pinInput");
+      const btn    = document.getElementById("loginBtn");
+      const errBox = document.getElementById("authError");
+
+      function phoneToEmail(p){ return p.replace(/[^0-9]/g,"")+"@example.phone"; }
+
+      btn.onclick = async () => {
+        const p = phone.value.trim();
+        const k = pin.value.trim();
+        if(!/^\\d{9,15}$/.test(p)||!/^\\d{4}$/.test(k)){
+          errBox.textContent="Shigar da lambar waya da PIN mai lamba 4 kawai.";
+          errBox.classList.remove("hidden"); return;
+        }
+        const email = phoneToEmail(p);
+        try{
+          await auth.signInWithEmailAndPassword(email,k);
+        }catch(e){
+          if(e.code==="auth/user-not-found"){
+            await auth.createUserWithEmailAndPassword(email,k);
+          }else{
+            errBox.textContent="Kuskure: "+e.message;
+            errBox.classList.remove("hidden");
+          }
+        }
+      };
+      auth.onAuthStateChanged(u=>u?gate.classList.add("hidden"):gate.classList.remove("hidden"));
+
+      // WhatsApp button
+      const phoneNumber = "491234567890"; // <= change to your number (no +)
+      sendBtn.onclick = () => {
+        const msg = encodeURIComponent(message.value.trim()||"Don Allah Turo Min Free Data");
+        window.open(`https://wa.me/${phoneNumber}?text=${msg}`,"_blank");
+      };
+    </script>
+  </body>
+</html>
